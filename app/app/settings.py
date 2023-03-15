@@ -26,12 +26,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'changeme')
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 ALLOWED_HOSTS = []
-ALLOWED_HOSTS.extend(
-    filter(
-        None,
-        os.environ.get('ALLOWED_HOSTS', '').split(','),
-    )
-)
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 
 
 # Application definition
@@ -129,4 +126,5 @@ MEDIA_URL = '/static/media/'
 
 STATIC_ROOT = '/vol/web/static'
 MEDIA_ROOT = '/vol/web/media'
+
 

@@ -1,26 +1,24 @@
-version: "3.9"
+version: "3.7"
 
 services:
   app:
     build:
       context: .
-    restart: always
     volumes:
-      - static-data:/vol/web
+      - static_data:/vol/web
     environment:
-      - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - SECRET_KEY=samplesecretkey123
+      - ALLOWED_HOSTS=127.0.0.1, localhost
 
   proxy:
     build:
       context: ./proxy
-    restart: always
+    volumes:
+      - static_data:/vol/static
+    ports:
+      - "8080:8080"
     depends_on:
       - app
-    ports:
-      - 80:8000
-    volumes:
-      - static-data:/vol/static
 
 volumes:
-  static-data:
+  static_data:
