@@ -1,25 +1,42 @@
 FROM python:3.9-alpine3.12
+LABEL maintainer="juldavis"
 
-ENV PATH="/scripts:${PATH}"
+ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /requirements.txt
-RUN apk add --update --no-cache --virtual .tmp gcc libc-dev linux-headers
-RUN pip install -r /requirements.txt
-RUN apk del .tmp
-
-RUN mkdir /app
-COPY ./app /app
-WORKDIR /app
+COPY ./requirements.txt /tmp/requirements.txt
+COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./scripts /scripts
+COPY ./app /app
 
-RUN chmod +x /scripts/*
+WORKDIR /app
 
-RUN mkdir -p /vol/web/media
-RUN mkdir -p /vol/web/static
+EXPOSE 8000
 
-RUN adduser -D user
-RUN chown -R user:user /vol
-RUN chmod -R 755 /vol/web
-USER user
+ARG DEV=false
 
-CMD ["entrypoint.sh"]
+RUN python -m venv /py && \
+  /py/bin/pip install --upgrade pip && \
+  apk add --update --no-cache postgresql-client jpeg-dev && \
+  apk add --update --no-cache --virtual .tmp-build-deps \
+    build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
+  /py/bin/pip install -r /tmp/requirements.txt && \
+  if [ $DEV = "true" ]; \
+    then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+  fi && \
+  rm -rf /tmp && \
+  apk del .tmp-build-deps && \
+  adduser \
+    --disabled-password \
+    --no-create-home \
+    django-user && \
+  mkdir -p /vol/web/media && \
+  mkdir -p /vol/web/static && \
+  chown -R django-user:django-user /vol && \
+  chmod -R 755 /vol && \
+  chmod -R +x /scripts
+
+ENV PATH="/scripts:/py/bin:$PATH"
+
+USER django-user
+
+CMD ["run.sh"]
