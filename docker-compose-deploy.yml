@@ -7,16 +7,21 @@ services:
     volumes:
       - static_data:/vol/web
     environment:
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
 
   proxy:
     build:
       context: ./proxy
+    restart: always
     volumes:
       - static_data:/vol/static
     ports:
-      - "8080:8080"
+      - 80:8000
     depends_on:
       - app
 
