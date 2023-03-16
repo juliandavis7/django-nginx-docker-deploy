@@ -8,4 +8,4 @@ python manage.py collectstatic --noinput
 # runs our application using uWSGI
 # socket = TCP socket on port 8000, used to reference proxy when we forward the request
 # master = run as master, in the foreground
-uwsgi --socket :8000 --master --enable-threads --module app.wsgi
+uwsgi --socket :9000 --master --enable-threads --module app.wsgi
