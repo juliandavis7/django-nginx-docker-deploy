@@ -9,8 +9,6 @@ services:
     environment:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
-      - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
 
   proxy:
     build:
